@@ -6,7 +6,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-const connectionString = 'mongodb+srv://pramepreejobe:hylZa0TEmLlrb6jG@cluster0.znplgct.mongodb.net/<your-database>?retryWrites=true&w=majority';
+const connectionString = process.env.MONGODB_URI;
 
 mongoose.connect(connectionString, {
   tls: true // Enabling TLS explicitly if needed
@@ -26,7 +26,7 @@ const Article = mongoose.model('articles', ArticleSchema);
 app.get('/', async (req, res) => {
   try {
     const articles = await Article.find();
-    res.json('sssssss');
+    res.json('ssss');
   } catch (err) {
     res.status(500).send(err);
   }
@@ -42,6 +42,7 @@ app.post('/articles', async (req, res) => {
   }
 });
 
-app.listen(3000, () => {
-  console.log('Server is running on port 3000');
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
