@@ -1,4 +1,3 @@
-// server.js
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
@@ -8,20 +7,29 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+(async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('Connected to MongoDB');
+  } catch (err) {
+    console.error('Failed to connect to MongoDB', err);
+  }
+})();
 
-const ArticleSchema = new mongoose.Schema({
+const articleSchema = new mongoose.Schema({
   title: String,
-  content: String
+  content: String,
 });
 
-const Article = mongoose.model('articles', ArticleSchema);
+const Article = mongoose.model('Article', articleSchema);
 
 app.get('/', async (req, res) => {
   try {
     const articles = await Article.find();
-    const myJSON = JSON.stringify(articles);
-    res.json(myJSON);
+    res.json(articles);
   } catch (err) {
     res.status(500).send(err);
   }
@@ -29,16 +37,17 @@ app.get('/', async (req, res) => {
 
 app.post('/articles', async (req, res) => {
   try {
-    const newArticle = req.body;
-    const createdArticle = await Article.create(newArticle);
+    const newArticle = new Article(req.body);
+    const createdArticle = await newArticle.save();
     res.status(201).json(createdArticle);
   } catch (err) {
     res.status(500).send(err);
   }
 });
 
-app.listen(process.env.PORT, () => {
-  console.log(`Server is running on port ${process.env.PORT}`);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
 
 
