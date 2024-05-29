@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+require('dotenv').config(); // Load environment variables from .env file
 
 const app = express();
 app.use(express.json());
@@ -9,6 +10,8 @@ app.use(cors());
 const connectionString = process.env.MONGODB_URI;
 
 mongoose.connect(connectionString, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
   tls: true // Enabling TLS explicitly if needed
 }).then(() => {
   console.log('Connected to MongoDB');
@@ -26,7 +29,7 @@ const Article = mongoose.model('articles', ArticleSchema);
 app.get('/', async (req, res) => {
   try {
     const articles = await Article.find();
-    res.json('ssss');
+    res.json(articles); // Return the articles as JSON
   } catch (err) {
     res.status(500).send(err);
   }
