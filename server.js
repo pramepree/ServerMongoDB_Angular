@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -7,10 +6,16 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-mongoose.connect('mongodb+srv://pramepreejobe:hylZa0TEmLlrb6jG@cluster0.znplgct.mongodb.net/<your-database>?retryWrites=true&w=majority', {
+const connectionString = 'mongodb+srv://pramepreejobe:hylZa0TEmLlrb6jG@cluster0.znplgct.mongodb.net/<your-database>?retryWrites=true&w=majority';
+
+mongoose.connect(connectionString, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
   ssl: true
+}).then(() => {
+  console.log('Connected to MongoDB');
+}).catch(err => {
+  console.error('Error connecting to MongoDB:', err.message);
 });
 
 const ArticleSchema = new mongoose.Schema({
@@ -23,7 +28,7 @@ const Article = mongoose.model('articles', ArticleSchema);
 app.get('/', async (req, res) => {
   try {
     const articles = await Article.find();
-    res.json("ssss");
+    res.json('sssss');
   } catch (err) {
     res.status(500).send(err);
   }
