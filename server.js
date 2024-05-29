@@ -1,33 +1,32 @@
-require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const PORT = process.env.PORT || 3000;
+require('dotenv').config();
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-(async () => {
-  try {
-    await mongoose.connect(process.env.MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log('Connected to MongoDB');
-  } catch (err) {
-    console.error('Failed to connect to MongoDB', err);
-  }
-})();
+const connectionString = process.env.CONNECTION_STRING;
 
-const articleSchema = new mongoose.Schema({
-  title: String,
-  content: String,
+mongoose.connect(connectionString, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  ssl: true
+}).then(() => {
+  console.log('Connected to MongoDB');
+}).catch(err => {
+  console.error('Error connecting to MongoDB:', err.message);
 });
 
-const Article = mongoose.model('Article', articleSchema);
+const ArticleSchema = new mongoose.Schema({
+  title: String,
+  content: String
+});
 
-app.get('/', async (req, res) => {
+const Article = mongoose.model('articles', ArticleSchema);
+
+app.get('/articles', async (req, res) => {
   try {
     const articles = await Article.find();
     res.json(articles);
@@ -38,29 +37,14 @@ app.get('/', async (req, res) => {
 
 app.post('/articles', async (req, res) => {
   try {
-    const newArticle = new Article(req.body);
-    const createdArticle = await newArticle.save();
+    const newArticle = req.body;
+    const createdArticle = await Article.create(newArticle);
     res.status(201).json(createdArticle);
   } catch (err) {
     res.status(500).send(err);
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(3000, () => {
+  console.log('Server is running on port 3000');
 });
-
-
-
-
-// const express = require('express');
-// const app = express();
-// const PORT = process.env.PORT || 3000;
-
-// app.get('/', (req, res) => {
-//   res.send('ssss');
-// });
-
-// app.listen(PORT, () => {
-//   console.log(`Server is running on port ${PORT}`);
-// });
