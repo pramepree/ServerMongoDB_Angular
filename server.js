@@ -19,7 +19,7 @@ const Article = mongoose.model('articles', ArticleSchema);
 app.get('/', async (req, res) => {
   try {
     const articles = await Article.find();
-    res.json(articles);
+    res.json("ssss");
   } catch (err) {
     res.status(500).send(err);
   }
