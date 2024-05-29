@@ -9,9 +9,7 @@ app.use(cors());
 const connectionString = 'mongodb+srv://pramepreejobe:hylZa0TEmLlrb6jG@cluster0.znplgct.mongodb.net/<your-database>?retryWrites=true&w=majority';
 
 mongoose.connect(connectionString, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  ssl: true
+  tls: true // Enabling TLS explicitly if needed
 }).then(() => {
   console.log('Connected to MongoDB');
 }).catch(err => {
@@ -28,7 +26,7 @@ const Article = mongoose.model('articles', ArticleSchema);
 app.get('/', async (req, res) => {
   try {
     const articles = await Article.find();
-    res.json('sssss');
+    res.json('sssssss');
   } catch (err) {
     res.status(500).send(err);
   }
